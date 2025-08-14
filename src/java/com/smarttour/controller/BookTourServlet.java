@@ -24,10 +24,13 @@ public class BookTourServlet extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
 
         // Retrieve form parameters
+        String username = request.getParameter("username");
+        String email = request.getParameter("email");
         String destinationName = request.getParameter("destination");
         String travelDate = request.getParameter("date");
         String guestsStr = request.getParameter("people");
 
+        // Session check
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("user_id") == null) {
             request.setAttribute("errorMessage", "You must be logged in to book a tour.");
@@ -37,7 +40,10 @@ public class BookTourServlet extends HttpServlet {
 
         int userId = (int) session.getAttribute("user_id");
 
-        if (destinationName == null || destinationName.trim().isEmpty() ||
+        // Validate all fields
+        if (username == null || username.trim().isEmpty() ||
+            email == null || email.trim().isEmpty() ||
+            destinationName == null || destinationName.trim().isEmpty() ||
             travelDate == null || travelDate.trim().isEmpty() ||
             guestsStr == null || guestsStr.trim().isEmpty()) {
 
@@ -66,15 +72,17 @@ public class BookTourServlet extends HttpServlet {
 
                 int destinationId = rs.getInt("destination_id");
 
-                // Insert booking
-                String sql = "INSERT INTO bookings (user_id, destination_id, booking_date, num_persons, total_price, status) "
-                           + "VALUES (?, ?, ?, ?, ?, 'PENDING')";
+                // Insert booking into database
+                String sql = "INSERT INTO bookings (user_id, destination_id, booking_date, num_persons, total_price, status, username, email) "
+                           + "VALUES (?, ?, ?, ?, ?, 'PENDING', ?, ?)";
                 PreparedStatement ps = conn.prepareStatement(sql);
                 ps.setInt(1, userId);
                 ps.setInt(2, destinationId);
                 ps.setString(3, travelDate);
                 ps.setInt(4, guests);
                 ps.setDouble(5, totalPrice);
+                ps.setString(6, username);
+                ps.setString(7, email);
 
                 int rowsInserted = ps.executeUpdate();
 
@@ -82,7 +90,7 @@ public class BookTourServlet extends HttpServlet {
                     request.setAttribute("destination", destinationName);
                     request.setAttribute("guests", guests);
                     request.setAttribute("totalPrice", totalPrice);
-                    request.getRequestDispatcher("booking-success.jsp").forward(request, response);
+                    request.getRequestDispatcher("bookingSuccess.jsp").forward(request, response);
                 } else {
                     request.setAttribute("errorMessage", "Booking could not be completed. Please try again.");
                     request.getRequestDispatcher("book.jsp").forward(request, response);
