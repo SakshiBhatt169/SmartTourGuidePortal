@@ -1,68 +1,80 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<%
-    request.setCharacterEncoding("UTF-8");
-    String destination = request.getParameter("tourName"); // from previous page or link
-%>
-<!DOCTYPE html>
+<%@ include file="includes/header.jsp" %>
+<%@ include file="includes/navbar.jsp" %>
 <html>
 <head>
-    <title>Book Tour</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Book a Tour</title>
     <style>
-        body { background: #f8f9fa; }
-        .booking-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            margin-top: 50px;
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
         }
-        .btn-custom {
-            background-color: #28a745;
+        .booking-container {
+            width: 50%;
+            margin: 50px auto;
+            background: #fff;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        .booking-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .booking-container input, .booking-container select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .booking-container input[type="submit"] {
+            background-color: #007bff;
             color: white;
-            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
         }
-        .btn-custom:hover {
-            background-color: #218838;
+        .booking-container input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="booking-card">
-        <h2 class="text-center text-primary mb-4">Book Your Tour</h2>
-
-        <%-- Show error message if set by servlet --%>
-        <c:if test="${not empty errorMessage}">
-            <div class="alert alert-danger">${errorMessage}</div>
-        </c:if>
-
+    <div class="booking-container">
+        <h2>Book Your Tour</h2>
+        
+        <% String errorMessage = (String) request.getAttribute("errorMessage");
+           if(errorMessage != null) { %>
+            <div class="error-message"><%= errorMessage %></div>
+        <% } %>
+        
         <form action="BookTourServlet" method="post">
-            <input type="hidden" name="destination" value="<%= (destination != null) ? destination : "" %>">
-
-            <div class="mb-3">
-                <label class="form-label">Your Name</label>
-                <input type="text" class="form-control" name="name" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Email</label>
-                <input type="email" class="form-control" name="email" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Travel Date</label>
-                <input type="date" class="form-control" name="date" required>
-            </div>
-
-            <div class="mb-3">
-                <label class="form-label">Number of People</label>
-                <input type="number" class="form-control" name="people" min="1" required>
-            </div>
-
-            <button type="submit" class="btn btn-custom w-100">Confirm Booking</button>
+            <input type="text" name="username" placeholder="Your Name" required>
+            <input type="email" name="email" placeholder="Email" required>
+            
+            <select name="destination" required>
+                <option value="">Select Destination</option>
+                <option value="Goa">Goa</option>
+                <option value="Jaipur">Jaipur</option>
+                <option value="Manali">Manali</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Kashmir">Kashmir</option>
+            </select>
+            
+            <input type="date" name="date" required>
+            <input type="number" name="people" placeholder="Number of People" min="1" required>
+            
+            <input type="submit" value="Book Now">
         </form>
     </div>
-</div>
 </body>
 </html>
