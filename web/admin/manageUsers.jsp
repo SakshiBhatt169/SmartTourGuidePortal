@@ -71,7 +71,7 @@
                 <a href="manageTours.jsp" class="nav-link">Manage Tours</a>
             </li>
             <li>
-                <a href="../LogoutServlet" class="nav-link text-danger">Logout</a>
+                <a href="<%=request.getContextPath()%>/LogoutServlet" class="nav-link text-danger">Logout</a>
             </li>
         </ul>
     </nav>
@@ -98,13 +98,17 @@
                 <tbody>
                     <% for(User user : users) { %>
                         <tr>
-                            <td><%= user.getId() %></td>
+                            <td><%= user.getUserId() %></td>
                             <td><%= user.getName() %></td>
                             <td><%= user.getEmail() %></td>
                             <td><%= user.getRole() %></td>
                             <td>
-                                <a href="EditUserServlet?id=<%= user.getId() %>" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="DeleteUserServlet?id=<%= user.getId() %>" 
+                                <!-- Edit link with absolute path -->
+                                <a href="<%=request.getContextPath()%>/EditUserServlet?id=<%= user.getUserId() %>" 
+                                   class="btn btn-sm btn-warning">Edit</a>
+
+                                <!-- Delete link with absolute path -->
+                                <a href="<%=request.getContextPath()%>/DeleteUserServlet?id=<%= user.getUserId() %>" 
                                    class="btn btn-sm btn-danger" 
                                    onclick="return confirm('Are you sure to delete user <%= user.getName() %>?');">
                                    Delete
