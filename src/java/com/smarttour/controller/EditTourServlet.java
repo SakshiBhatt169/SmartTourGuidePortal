@@ -1,7 +1,7 @@
 package com.smarttour.controller;
 
-import com.smarttour.dao.TourDAO;
-import com.smarttour.model.Tour;
+import com.smarttour.dao.UserDAO;
+import com.smarttour.model.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -10,77 +10,40 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/EditTourServlet")
-public class EditTourServlet extends HttpServlet {
+@WebServlet("/EditUserServlet")
+public class EditUserServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String idStr = request.getParameter("id");
-        if (idStr == null || idStr.trim().isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Tour ID is missing");
-            return;
+        if (idStr != null) {
+            int id = Integer.parseInt(idStr);
+            UserDAO userDAO = new UserDAO();
+            User user = userDAO.getUserById(id);
+            request.setAttribute("user", user);
+            request.getRequestDispatcher("/admin/editUser.jsp").forward(request, response);
         }
-
-        int id;
-        try {
-            id = Integer.parseInt(idStr);
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid Tour ID");
-            return;
-        }
-
-        TourDAO tourDAO = new TourDAO();
-        Tour tour = tourDAO.getTourById(id);
-
-        if (tour == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Tour not found");
-            return;
-        }
-
-        request.setAttribute("tour", tour);
-        request.getRequestDispatcher("/admin/edittour.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String idStr = request.getParameter("id");
-        String priceStr = request.getParameter("price");
+        int id = Integer.parseInt(request.getParameter("id"));
+        String name = request.getParameter("name");
+        String email = request.getParameter("email");
+        String phone = request.getParameter("phone");
+        String role = request.getParameter("role");
 
-        if (idStr == null || idStr.trim().isEmpty() || priceStr == null || priceStr.trim().isEmpty()) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Required parameters missing");
-            return;
-        }
+        User user = new User();
+        user.setUserId(id);
+        user.setName(name);
+        user.setEmail(email);
+        user.setPhone(phone);
+        user.setRole(role);
 
-        int id;
-        double price;
-        try {
-            id = Integer.parseInt(idStr);
-            price = Double.parseDouble(priceStr);
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid number format");
-            return;
-        }
+        UserDAO userDAO = new UserDAO();
+        userDAO.updateUser(user);
 
-        String title = request.getParameter("title");
-        String description = request.getParameter("description");
-        String location = request.getParameter("location");
-        String image = request.getParameter("image");
-
-        Tour tour = new Tour();
-        tour.setId(id);
-        tour.setTitle(title);
-        tour.setDescription(description);
-        tour.setPrice(price);
-        tour.setLocation(location);
-        tour.setImage(image);
-
-        TourDAO tourDAO = new TourDAO();
-        boolean success = tourDAO.updateTour(tour);
-
-        if (success) {
-            response.sendRedirect(request.getContextPath() + "/AdminTourListServlet");
-        } else {
-            response.getWriter().println("Error: Could not update tour.");
-        }
+        response.sendRedirect(request.getContextPath() + "/AdminUserListServlet");
     }
 }
