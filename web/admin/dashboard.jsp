@@ -103,8 +103,10 @@
                             <td><%= user.getEmail() %></td>
                             <td><%= user.getRole() %></td>
                             <td>
-                                <a href="EditUserServlet?id=<%= user.getUserId() %>" class="btn btn-sm btn-warning">Edit</a>
-                                <a href="DeleteUserServlet?id=<%= user.getUserId() %>" 
+                                <!-- FIXED: Removed EL, only scriptlet -->
+                                <a href="<%= request.getContextPath() %>/EditUserServlet?id=<%= user.getUserId() %>" class="btn btn-sm btn-warning">Edit</a>
+
+                                <a href="<%= request.getContextPath() %>/DeleteUserServlet?id=<%= user.getUserId() %>" 
                                    class="btn btn-sm btn-danger" 
                                    onclick="return confirm('Are you sure to delete user <%= user.getName() %>?');">
                                    Delete
@@ -121,5 +123,3 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
-
-
