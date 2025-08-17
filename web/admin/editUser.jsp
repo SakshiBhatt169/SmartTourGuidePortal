@@ -8,7 +8,7 @@
 </head>
 <body>
 <h2>Edit User</h2>
-<form method="post" action="${pageContext.request.contextPath}/editUserServlet">
+<form method="post" action="${pageContext.request.contextPath}/EditUserServlet">
     <input type="hidden" name="id" value="<%= user.getUserId() %>"/>
     <p>Name: <input type="text" name="name" value="<%= user.getName() %>" required></p>
     <p>Email: <input type="email" name="email" value="<%= user.getEmail() %>" required></p>
